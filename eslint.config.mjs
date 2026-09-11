@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Foundry dependencies and build artifacts
+    "lib/forge-std/**",
+    "lib/openzeppelin-contracts/**",
+    "cache/**",
+    "broadcast/**",
   ]),
 ]);
 

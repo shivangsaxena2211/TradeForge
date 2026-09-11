@@ -1,0 +1,293 @@
+// DEFINN — PostgreSQL domain model
+// Hybrid architecture: application data in PostgreSQL; blockchain state indexed separately.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum WalletType {
+  DEFINN_CUSTOM
+}
+
+enum OrderSide {
+  BUY
+  SELL
+}
+
+enum OrderType {
+  MARKET
+  LIMIT
+}
+
+enum OrderStatus {
+  PENDING
+  EXECUTED
+  FAILED
+  CANCELLED
+}
+
+enum TransactionType {
+  STOCK_BUY
+  STOCK_SELL
+}
+
+enum TransactionStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+enum MarketSessionStatus {
+  PRE_OPEN
+  OPEN
+  CLOSED
+}
+
+enum PriceHistorySource {
+  HISTORICAL
+  SIMULATED
+}
+
+// ---------------------------------------------------------------------------
+// User & account models
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  wallet         Wallet?
+  virtualAccount VirtualAccount?
+  watchlists     Watchlist[]
+  orders         Order[]
+  holdings       Holding[]
+  trades         Trade[]
+  transactions   Transaction[]
+}
+
+/// Public blockchain wallet metadata only — no private keys or seed phrases.
+model Wallet {
+  id         String     @id @default(uuid()) @db.Uuid
+  userId     String     @unique @db.Uuid
+  address    String     @unique
+  walletType WalletType @default(DEFINN_CUSTOM)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([address])
+}
+
+/// Simulated virtual investment balance (not on-chain cryptocurrency).
+model VirtualAccount {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @unique @db.Uuid
+  availableCash Decimal  @db.Decimal(18, 2)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+}
+
+// ---------------------------------------------------------------------------
+// Market instruments
+// ---------------------------------------------------------------------------
+
+/// Listed security metadata for academic simulation — not live exchange execution.
+model Stock {
+  id                 String              @id @default(uuid()) @db.Uuid
+  symbol             String
+  companyName        String
+  exchange           String
+  isin               String?
+  sector             String?
+  instrumentType     String              @default("EQUITY")
+  description        String?
+  currentPrice       Decimal             @db.Decimal(18, 2)
+  previousClose      Decimal             @db.Decimal(18, 2)
+  dayOpen            Decimal?            @db.Decimal(18, 2)
+  dayHigh            Decimal?            @db.Decimal(18, 2)
+  dayLow             Decimal?            @db.Decimal(18, 2)
+  volume             BigInt              @default(0)
+  priceSource        String              @default("SIMULATION")
+  marketStatus       MarketSessionStatus @default(CLOSED)
+  lastMarketUpdateAt DateTime?
+  simulationEnabled  Boolean             @default(true)
+  onChainStockId      Int?
+  isActive           Boolean             @default(true)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  watchlists   Watchlist[]
+  orders       Order[]
+  holdings     Holding[]
+  trades       Trade[]
+  priceHistory PriceHistory[]
+
+  @@unique([exchange, symbol])
+  @@index([symbol])
+  @@index([exchange])
+  @@index([isin])
+  @@index([sector])
+  @@index([isActive])
+  @@index([simulationEnabled])
+}
+
+/// Price history — historical import and/or DEFINN simulation candles.
+model PriceHistory {
+  id         String             @id @default(uuid()) @db.Uuid
+  stockId    String             @db.Uuid
+  price      Decimal            @db.Decimal(18, 2)
+  open       Decimal?           @db.Decimal(18, 2)
+  high       Decimal?           @db.Decimal(18, 2)
+  low        Decimal?           @db.Decimal(18, 2)
+  close      Decimal?           @db.Decimal(18, 2)
+  volume     BigInt             @default(0)
+  sourceType PriceHistorySource @default(SIMULATED)
+  timestamp  DateTime           @default(now())
+
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Cascade)
+
+  @@unique([stockId, timestamp, sourceType])
+  @@index([stockId])
+  @@index([timestamp])
+  @@index([stockId, timestamp])
+  @@index([sourceType])
+}
+
+/// Singleton row for persisted market simulation engine snapshot.
+model MarketSimulationState {
+  id               String   @id @default("singleton")
+  seed             Int      @default(42)
+  simulationTime   DateTime @default(now())
+  marketRegime     String   @default("NEUTRAL")
+  volatilityRegime String   @default("NORMAL")
+  sentiment        String   @default("NEUTRAL")
+  isRunning        Boolean  @default(false)
+  speedMultiplier  Float    @default(1)
+  lastTickAt       DateTime?
+  stateJson        Json?
+  updatedAt        DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Watchlist
+// ---------------------------------------------------------------------------
+
+model Watchlist {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  stockId   String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, stockId])
+  @@index([userId])
+  @@index([stockId])
+}
+
+// ---------------------------------------------------------------------------
+// Orders & execution
+// ---------------------------------------------------------------------------
+
+model Order {
+  id             String      @id @default(uuid()) @db.Uuid
+  userId         String      @db.Uuid
+  stockId        String      @db.Uuid
+  side           OrderSide
+  orderType      OrderType
+  quantity       Decimal     @db.Decimal(18, 8)
+  limitPrice     Decimal?    @db.Decimal(18, 2)
+  status         OrderStatus @default(PENDING)
+  requestedPrice Decimal     @db.Decimal(18, 2)
+  executedPrice  Decimal?    @db.Decimal(18, 2)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  stock        Stock         @relation(fields: [stockId], references: [id], onDelete: Restrict)
+  trade        Trade?
+  transactions Transaction[]
+
+  @@index([userId])
+  @@index([stockId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId, status])
+}
+
+model Holding {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @db.Uuid
+  stockId         String   @db.Uuid
+  quantity        Decimal  @db.Decimal(18, 8)
+  averageBuyPrice Decimal  @db.Decimal(18, 2)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Restrict)
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, stockId])
+  @@index([userId])
+  @@index([stockId])
+}
+
+/// Executed trade record linked to a single originating order.
+model Trade {
+  id         String    @id @default(uuid()) @db.Uuid
+  orderId    String    @unique @db.Uuid
+  userId     String    @db.Uuid
+  stockId    String    @db.Uuid
+  side       OrderSide
+  quantity   Decimal   @db.Decimal(18, 8)
+  price      Decimal   @db.Decimal(18, 2)
+  totalValue Decimal   @db.Decimal(18, 2)
+  executedAt DateTime  @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Restrict)
+  stock Stock @relation(fields: [stockId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([stockId])
+  @@index([executedAt])
+  @@index([userId, stockId])
+}
+
+/// Application-level index of blockchain / trading activity.
+model Transaction {
+  id              String            @id @default(uuid()) @db.Uuid
+  userId          String            @db.Uuid
+  orderId         String?           @db.Uuid
+  transactionType TransactionType
+  status          TransactionStatus @default(PENDING)
+  txHash          String?           @unique
+  blockNumber     BigInt?
+  createdAt       DateTime          @default(now())
+  confirmedAt     DateTime?
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([status])
+  @@index([transactionType])
+}

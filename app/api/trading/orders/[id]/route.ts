@@ -1,0 +1,41 @@
+import { NextResponse } from "next/server";
+
+import { logServerError } from "@/lib/api/safe-error";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getOrderDetailForUser } from "@/lib/trading/service";
+import { uuidParamSchema } from "@/lib/validation/common";
+
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
+export async function GET(_request: Request, context: RouteContext) {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    const { id } = await context.params;
+    const parsedId = uuidParamSchema.safeParse(id);
+
+    if (!parsedId.success) {
+      return NextResponse.json({ error: "Order not found." }, { status: 404 });
+    }
+
+    const order = await getOrderDetailForUser(user.id, parsedId.data);
+
+    if (!order) {
+      return NextResponse.json({ error: "Order not found." }, { status: 404 });
+    }
+
+    return NextResponse.json(order);
+  } catch (error) {
+    logServerError("Order detail fetch failed", error);
+    return NextResponse.json(
+      { error: "Unable to load order." },
+      { status: 500 },
+    );
+  }
+}
