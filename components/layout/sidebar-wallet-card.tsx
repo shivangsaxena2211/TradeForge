@@ -19,20 +19,23 @@ export function SidebarWalletCard() {
     return (
       <Link
         href="/wallet"
-        className="definn-card block p-3 transition-colors hover:border-primary/30"
+        className="definn-card block p-2.5 transition-colors hover:border-primary/30"
       >
         <div className="flex items-center gap-2">
-          <div className="definn-kpi-icon size-9 rounded-lg">
-            <Wallet className="size-4" aria-hidden="true" />
+          <div
+            className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary"
+            aria-hidden="true"
+          >
+            <Wallet className="size-3.5" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
               DEFINN Wallet
             </p>
-            <p className="text-sm font-medium">Not configured</p>
+            <p className="text-xs font-medium">Not configured</p>
           </div>
         </div>
-        <p className="mt-2 text-xs text-primary">Create wallet →</p>
+        <p className="mt-1.5 text-[10px] text-primary">Create wallet →</p>
       </Link>
     );
   }
@@ -55,23 +58,26 @@ export function SidebarWalletCard() {
   return (
     <Link
       href="/wallet"
-      className="definn-card definn-card-glow block p-3 transition-colors hover:border-primary/40"
+      className="definn-card block p-2.5 transition-colors hover:border-primary/30"
       aria-label={`DEFINN Wallet ${statusLabel}`}
     >
       <div className="flex items-center gap-2">
-        <div className="definn-kpi-icon size-9 rounded-lg">
-          <Wallet className="size-4" aria-hidden="true" />
+        <div
+          className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary"
+          aria-hidden="true"
+        >
+          <Wallet className="size-3.5" />
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
             DEFINN Wallet
           </p>
-          <p className="truncate font-mono text-sm font-medium">
+          <p className="truncate font-mono text-xs font-medium">
             {truncateAddress(metadata.address)}
           </p>
         </div>
       </div>
-      <p className={`mt-2 flex items-center gap-1.5 text-xs font-medium ${statusColor}`}>
+      <p className={`mt-1.5 flex items-center gap-1 text-[10px] font-medium ${statusColor}`}>
         <span
           className={`size-1.5 rounded-full ${
             statusLabel === "Connected"

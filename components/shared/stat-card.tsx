@@ -23,27 +23,30 @@ export function StatCard({
   return (
     <article
       className={cn(
-        "definn-card p-5 transition-colors hover:border-primary/25 motion-reduce:transition-none",
-        highlight && "definn-card-glow",
+        "definn-card p-3 transition-colors hover:border-primary/20 motion-reduce:transition-none",
+        highlight && "border-primary/20",
         className,
       )}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            {title}
-          </p>
-          <p className="text-2xl font-bold tracking-tight md:text-3xl">{value}</p>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 space-y-1">
+          <p className="tf-metric-label">{title}</p>
+          <p className="tf-metric-value">{value}</p>
           {trend ? (
-            <p className="text-xs font-medium text-primary">{trend}</p>
+            <p className="text-[11px] font-medium text-primary">{trend}</p>
           ) : null}
           {description ? (
-            <p className="text-xs leading-relaxed text-muted-foreground">{description}</p>
+            <p className="text-[11px] leading-snug text-muted-foreground">
+              {description}
+            </p>
           ) : null}
         </div>
         {Icon ? (
-          <div className="definn-kpi-icon" aria-hidden="true">
-            <Icon className="size-5" />
+          <div
+            className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"
+            aria-hidden="true"
+          >
+            <Icon className="size-3.5" />
           </div>
         ) : null}
       </div>

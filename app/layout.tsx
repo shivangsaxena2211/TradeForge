@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s | DEFINN",
   },
   description:
-    "Blockchain-based decentralized stock trading simulation platform (academic prototype).",
+    "DEFINN — blockchain-powered stock trading simulation with realistic market data, virtual funds, and transparent on-chain transaction records.",
 };
 
 export default function RootLayout({

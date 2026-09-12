@@ -4,9 +4,10 @@ import Link from "next/link";
 
 import { AllocationTable } from "@/components/portfolio/allocation-table";
 import { HoldingsTable } from "@/components/portfolio/holdings-table";
+import { PortfolioAllocationChart } from "@/components/portfolio/portfolio-allocation-chart";
 import { PageHeader } from "@/components/layout/page-header";
 import { SectionCard } from "@/components/shared/section-card";
-import { StatCard } from "@/components/shared/stat-card";
+import { DashboardMetricCard } from "@/components/shared/dashboard-metric-card";
 import { Button } from "@/components/ui/button";
 import { requireAuth } from "@/lib/auth/session";
 import { formatChange, formatInr } from "@/lib/format/currency";
@@ -49,12 +50,12 @@ export default async function PortfolioPage() {
     <>
       <PageHeader
         title="Portfolio"
-        description="Simulated holdings valued using PostgreSQL market prices. Cost basis comes from confirmed blockchain trades."
-        badge="Simulated Valuation"
+        description="Simulated holdings valued using PostgreSQL market prices. Cost basis from confirmed blockchain trades."
+        badge="Simulated"
       />
 
       {summary?.walletMissing ? (
-        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-200">
+        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
           Register a DEFINN wallet to read on-chain virtual cash and compare holdings.
           <Link href="/wallet" className="ml-2 underline">
             Go to Wallet
@@ -63,74 +64,71 @@ export default async function PortfolioPage() {
       ) : null}
 
       {summary?.blockchainStaleWarning ? (
-        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-800 dark:text-amber-200">
-          PostgreSQL holdings may not match the current Anvil blockchain state. After an Anvil reset, historical database records can remain while on-chain state is cleared.
+        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+          PostgreSQL holdings may not match the current Anvil blockchain state.
         </p>
       ) : null}
 
-      <section aria-label="Portfolio summary" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          title="Total Portfolio Value"
-          value={
-            summary
-              ? formatInr(summary.totalPortfolioValue)
-              : "—"
-          }
-          description={`${summary?.holdingsCount ?? 0} holdings · simulated market value plus on-chain virtual cash.`}
+      <section
+        aria-label="Portfolio summary"
+        className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4"
+      >
+        <DashboardMetricCard
+          title="Portfolio Value"
+          value={summary ? formatInr(summary.totalPortfolioValue) : "—"}
+          description={`${summary?.holdingsCount ?? 0} holdings`}
           icon={LineChart}
         />
-        <StatCard
-          title="On-chain Virtual Cash"
+        <DashboardMetricCard
+          title="Available Cash"
           value={cashValue}
-          description="Simulated trading cash from Stock.sol — not real INR or ETH."
+          description="On-chain virtual cash"
           icon={Wallet}
         />
-        <StatCard
-          title="Total Invested Value"
-          value={
-            summary ? formatInr(summary.totalCostBasis) : "—"
-          }
-          description="Remaining cost basis from confirmed blockchain trades."
+        <DashboardMetricCard
+          title="Invested Value"
+          value={summary ? formatInr(summary.totalCostBasis) : "—"}
+          description="Remaining cost basis"
           icon={IndianRupee}
         />
-        <StatCard
+        <DashboardMetricCard
           title="Unrealized P/L"
           value={pnlValue}
-          description="Simulated market value minus remaining cost basis."
+          description="Market value minus cost"
           icon={Briefcase}
         />
       </section>
 
-      <SectionCard
-        title="Holdings"
-        description="Current simulated market value uses PostgreSQL prices. Average buy price comes from confirmed trade execution."
-      >
-        <HoldingsTable holdings={holdings} />
-      </SectionCard>
-
-      {holdings.length > 0 ? (
+      <div className="grid gap-3 lg:grid-cols-3">
         <SectionCard
-          title="Portfolio Allocation"
-          description="Share of total simulated market value by holding."
+          title="Holdings"
+          description="Quantity, avg. price, current price, P/L."
+          compact
+          className="lg:col-span-2"
         >
-          <AllocationTable holdings={holdings} />
+          <HoldingsTable holdings={holdings} />
         </SectionCard>
-      ) : (
-        <SectionCard title="Portfolio Allocation">
-          <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              No holdings to allocate yet.
-            </p>
-            <Link href="/markets">
-              <Button type="button">Browse Markets</Button>
-            </Link>
-          </div>
-        </SectionCard>
-      )}
 
-      <p className="text-xs text-muted-foreground">
-        Current portfolio valuation uses simulated PostgreSQL market prices, while trade cost basis comes from confirmed blockchain execution prices.
-      </p>
+        <SectionCard
+          title="Allocation"
+          description="Distribution by market value."
+          compact
+        >
+          <PortfolioAllocationChart holdings={holdings} />
+          {holdings.length > 0 ? (
+            <div className="mt-3 border-t border-border/40 pt-3">
+              <AllocationTable holdings={holdings} />
+            </div>
+          ) : (
+            <div className="mt-3 space-y-2">
+              <p className="text-xs text-muted-foreground">No holdings yet.</p>
+              <Link href="/markets">
+                <Button type="button" size="sm">Browse Markets</Button>
+              </Link>
+            </div>
+          )}
+        </SectionCard>
+      </div>
     </>
   );
 }

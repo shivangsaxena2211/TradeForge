@@ -39,11 +39,11 @@ export const PAGE_TITLES: Record<string, string> = {
 };
 
 export const PAGE_BREADCRUMBS: Record<string, string[]> = {
-  "/dashboard": ["Pages", "Dashboard"],
-  "/markets": ["Pages", "Markets"],
-  "/portfolio": ["Pages", "Portfolio"],
-  "/orders": ["Pages", "Orders"],
-  "/transactions": ["Pages", "Transactions"],
-  "/wallet": ["Pages", "Wallet"],
-  "/settings": ["Pages", "Settings"],
+  "/dashboard": ["DEFINN", "Dashboard"],
+  "/markets": ["DEFINN", "Markets"],
+  "/portfolio": ["DEFINN", "Portfolio"],
+  "/orders": ["DEFINN", "Orders"],
+  "/transactions": ["DEFINN", "Transactions"],
+  "/wallet": ["DEFINN", "Wallet"],
+  "/settings": ["DEFINN", "Settings"],
 };

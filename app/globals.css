@@ -41,6 +41,8 @@
   --color-card: var(--card);
   --color-definn-glow: var(--definn-glow);
   --color-definn-surface-elevated: var(--definn-surface-elevated);
+  --color-surface-nested: var(--surface-nested);
+  --color-surface-inset: var(--surface-inset);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --radius-sm: calc(var(--radius) * 0.6);
@@ -54,13 +56,13 @@
 
 /* DEFINN premium dark fintech theme */
 :root {
-  --background: oklch(0.12 0.035 264);
+  --background: oklch(0.1 0.03 264);
   --foreground: oklch(0.97 0.01 264);
-  --card: oklch(0.17 0.04 264);
+  --card: oklch(0.15 0.038 264);
   --card-foreground: oklch(0.97 0.01 264);
   --popover: oklch(0.17 0.04 264);
   --popover-foreground: oklch(0.97 0.01 264);
-  --primary: oklch(0.62 0.2 252);
+  --primary: oklch(0.68 0.19 210);
   --primary-foreground: oklch(0.99 0.01 264);
   --secondary: oklch(0.22 0.045 264);
   --secondary-foreground: oklch(0.95 0.01 264);
@@ -79,8 +81,10 @@
   --chart-3: oklch(0.72 0.17 155);
   --chart-4: oklch(0.78 0.14 85);
   --chart-5: oklch(0.62 0.22 25);
-  --radius: 0.875rem;
-  --sidebar: oklch(0.14 0.038 264);
+  --radius: 0.75rem;
+  --sidebar: oklch(0.12 0.035 264);
+  --surface-nested: oklch(0.13 0.036 264);
+  --surface-inset: oklch(0.11 0.032 264);
   --sidebar-foreground: oklch(0.92 0.02 264);
   --sidebar-primary: oklch(0.62 0.2 252);
   --sidebar-primary-foreground: oklch(0.99 0.01 264);
@@ -88,18 +92,18 @@
   --sidebar-accent-foreground: oklch(0.97 0.01 264);
   --sidebar-border: oklch(0.35 0.06 264 / 30%);
   --sidebar-ring: oklch(0.62 0.2 252 / 50%);
-  --definn-glow: oklch(0.62 0.2 252 / 22%);
-  --definn-surface-elevated: oklch(0.19 0.045 264);
+  --definn-glow: oklch(0.68 0.19 210 / 18%);
+  --definn-surface-elevated: oklch(0.17 0.04 264);
 }
 
 .dark {
-  --background: oklch(0.12 0.035 264);
+  --background: oklch(0.1 0.03 264);
   --foreground: oklch(0.97 0.01 264);
-  --card: oklch(0.17 0.04 264);
+  --card: oklch(0.15 0.038 264);
   --card-foreground: oklch(0.97 0.01 264);
   --popover: oklch(0.17 0.04 264);
   --popover-foreground: oklch(0.97 0.01 264);
-  --primary: oklch(0.62 0.2 252);
+  --primary: oklch(0.68 0.19 210);
   --primary-foreground: oklch(0.99 0.01 264);
   --secondary: oklch(0.22 0.045 264);
   --secondary-foreground: oklch(0.95 0.01 264);
@@ -126,8 +130,8 @@
   --sidebar-accent-foreground: oklch(0.97 0.01 264);
   --sidebar-border: oklch(0.35 0.06 264 / 30%);
   --sidebar-ring: oklch(0.62 0.2 252 / 50%);
-  --definn-glow: oklch(0.62 0.2 252 / 22%);
-  --definn-surface-elevated: oklch(0.19 0.045 264);
+  --definn-glow: oklch(0.68 0.19 210 / 18%);
+  --definn-surface-elevated: oklch(0.17 0.04 264);
 }
 
 @layer base {
@@ -186,8 +190,51 @@
   }
 
   .definn-nav-active {
-    @apply bg-primary/15 text-primary;
-    box-shadow: 0 0 20px -4px var(--definn-glow);
+    @apply bg-primary/12 text-primary;
+    box-shadow: inset 0 0 0 1px oklch(0.68 0.19 210 / 18%);
+  }
+
+  .tf-metric-value {
+    @apply text-2xl font-bold tracking-tight tabular-nums;
+  }
+
+  .tf-metric-label {
+    @apply text-[10px] font-semibold uppercase tracking-wider text-muted-foreground;
+  }
+
+  .tf-panel-header {
+    @apply text-sm font-semibold tracking-tight;
+  }
+
+  .tf-data-row {
+    @apply flex items-center gap-3 border-b border-border/40 px-3 py-2 text-sm transition-colors last:border-b-0 hover:bg-muted/20;
+  }
+
+  .tf-dense-table th {
+    @apply h-8 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground;
+  }
+
+  .tf-dense-table td {
+    @apply px-3 py-2 text-sm;
+  }
+
+  .landing-glass {
+    background: oklch(0.12 0.02 264 / 65%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid oklch(1 0 0 / 5%);
+  }
+
+  .landing-glow-blue {
+    box-shadow: 0 0 20px oklch(0.62 0.2 252 / 30%);
+  }
+
+  .landing-glow-blue:hover {
+    box-shadow: 0 0 30px oklch(0.62 0.2 252 / 50%);
+  }
+
+  .landing-gradient-text {
+    @apply bg-gradient-to-r from-primary to-emerald-400 bg-clip-text text-transparent;
   }
 
   @media (prefers-reduced-motion: reduce) {

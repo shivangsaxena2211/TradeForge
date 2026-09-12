@@ -4,7 +4,6 @@ import type { MarketStockDetail, PriceHistoryPoint } from "@/lib/market/types";
 
 import { StockDetailView } from "./stock-detail-view";
 import { TradePanel } from "@/components/trading/trade-panel";
-import { SectionCard } from "@/components/shared/section-card";
 
 type StockDetailClientProps = {
   stock: MarketStockDetail;
@@ -18,20 +17,27 @@ export function StockDetailClient({
   inWatchlist,
 }: StockDetailClientProps) {
   return (
-    <>
-      <StockDetailView stock={stock} history={history} inWatchlist={inWatchlist} />
-      <SectionCard
-        title="Blockchain Execution"
-        description="BUY/SELL orders are signed locally in your DEFINN Wallet and executed on Stock.sol. The simulated market price above is for display; on-chain price is authoritative at execution."
-        className="definn-card-glow border-primary/20"
-      >
+    <div className="grid gap-3 xl:grid-cols-[1fr_340px] xl:items-start">
+      <StockDetailView
+        stock={stock}
+        history={history}
+        inWatchlist={inWatchlist}
+      />
+      <aside className="definn-card sticky top-14 p-4 xl:top-16">
+        <div className="mb-3 space-y-1">
+          <h2 className="tf-panel-header">Trade {stock.symbol}</h2>
+          <p className="text-[11px] text-muted-foreground">
+            Orders are signed locally and executed on Stock.sol. Simulated
+            market price is for display; on-chain price is authoritative.
+          </p>
+        </div>
         <TradePanel
           symbol={stock.symbol}
           marketPriceInr={stock.currentPrice}
           isActiveInDatabase={stock.isActive}
           onChainStockId={stock.onChainStockId}
         />
-      </SectionCard>
-    </>
+      </aside>
+    </div>
   );
 }

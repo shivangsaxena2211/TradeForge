@@ -19,6 +19,8 @@ import type { PriceHistoryPoint } from "@/lib/market/types";
 type PriceHistoryChartProps = {
   history: PriceHistoryPoint[];
   loading?: boolean;
+  compact?: boolean;
+  heightClass?: string;
 };
 
 const HISTORICAL_COLOR = "oklch(0.55 0.04 264)";
@@ -61,11 +63,13 @@ function findSimulationStartIndex(history: PriceHistoryPoint[]): number {
 export function PriceHistoryChart({
   history,
   loading = false,
+  compact = false,
+  heightClass = "h-56",
 }: PriceHistoryChartProps) {
   if (loading) {
     return (
       <div
-        className="flex h-72 items-center justify-center rounded-xl border border-border/60 bg-muted/10 text-sm text-muted-foreground"
+        className={`flex ${heightClass} items-center justify-center rounded-lg border border-border/60 bg-muted/10 text-xs text-muted-foreground`}
         aria-busy="true"
       >
         Loading price history...
@@ -75,7 +79,9 @@ export function PriceHistoryChart({
 
   if (history.length === 0) {
     return (
-      <div className="flex h-72 items-center justify-center rounded-xl border border-dashed border-border/60 bg-muted/10 text-sm text-muted-foreground">
+      <div
+        className={`flex ${heightClass} items-center justify-center rounded-lg border border-dashed border-border/60 bg-muted/10 text-xs text-muted-foreground`}
+      >
         No price history available yet. Import historical CSV data or start the simulation engine.
       </div>
     );
@@ -92,8 +98,8 @@ export function PriceHistoryChart({
   const hasSimulated = history.some((point) => point.sourceType === "SIMULATED");
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+    <div className={compact ? "space-y-2" : "space-y-3"}>
+      <div className="flex flex-wrap gap-2 text-[10px] text-muted-foreground">
         {hasHistorical ? (
           <span className="inline-flex items-center gap-2">
             <span
@@ -114,7 +120,7 @@ export function PriceHistoryChart({
         ) : null}
       </div>
 
-      <div className="h-72 w-full" role="img" aria-label="Price history chart">
+      <div className={`${heightClass} w-full`} role="img" aria-label="Price history chart">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
             data={chartData}
@@ -192,17 +198,19 @@ export function PriceHistoryChart({
                 return timeLabel;
               }}
             />
-            <Legend
-              verticalAlign="top"
-              height={24}
-              formatter={(value) =>
-                value === "historicalPrice"
-                  ? "Historical"
-                  : value === "simulatedPrice"
-                    ? "DEFINN Simulation"
-                    : value
-              }
-            />
+            {!compact ? (
+              <Legend
+                verticalAlign="top"
+                height={24}
+                formatter={(value) =>
+                  value === "historicalPrice"
+                    ? "Historical"
+                    : value === "simulatedPrice"
+                      ? "DEFINN Simulation"
+                      : value
+                }
+              />
+            ) : null}
             {simulationStartLabel ? (
               <ReferenceLine
                 x={simulationStartLabel}

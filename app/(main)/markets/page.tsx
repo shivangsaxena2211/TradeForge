@@ -45,7 +45,7 @@ export default async function MarketsPage() {
       <>
         <PageHeader
           title="Markets"
-          description="Browse simulated stocks for the DEFINN academic prototype."
+          description="Browse simulated NSE equities on DEFINN."
           badge="Simulated Market Data"
         />
         <EmptyState
@@ -60,7 +60,7 @@ export default async function MarketsPage() {
     <>
       <PageHeader
         title="Markets"
-        description="Browse simulated stocks for the DEFINN academic prototype."
+        description="Browse simulated NSE equities on DEFINN."
         badge="Simulated Market Data"
       />
       <MarketsBrowser

@@ -371,36 +371,46 @@ export function TradePanel({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          variant={side === "BUY" ? "default" : "outline"}
-          onClick={() => {
-            setSide("BUY");
-            setShowConfirmation(false);
-            setUiState("idle");
-            setError(null);
-          }}
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <div
+          className="grid flex-1 grid-cols-2 gap-1 rounded-lg border border-border/50 bg-surface-inset p-1"
+          role="group"
+          aria-label="Trade side"
         >
-          Buy
-        </Button>
-        <Button
-          type="button"
-          variant={side === "SELL" ? "default" : "outline"}
-          onClick={() => {
-            setSide("SELL");
-            setShowConfirmation(false);
-            setUiState("idle");
-            setError(null);
-          }}
-        >
-          Sell
-        </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={side === "BUY" ? "default" : "ghost"}
+            className={side === "BUY" ? "bg-success/90 hover:bg-success/80" : ""}
+            onClick={() => {
+              setSide("BUY");
+              setShowConfirmation(false);
+              setUiState("idle");
+              setError(null);
+            }}
+          >
+            BUY
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={side === "SELL" ? "default" : "ghost"}
+            className={side === "SELL" ? "bg-destructive hover:bg-destructive/90" : ""}
+            onClick={() => {
+              setSide("SELL");
+              setShowConfirmation(false);
+              setUiState("idle");
+              setError(null);
+            }}
+          >
+            SELL
+          </Button>
+        </div>
         <StatusBadge status="Market Order" />
       </div>
 
-      <div className="grid gap-3 rounded-lg border bg-muted/20 p-4 text-sm md:grid-cols-2">
+      <div className="grid gap-2 rounded-lg border border-border/40 bg-surface-inset p-3 text-xs md:grid-cols-2">
         <div>
           <p className="text-muted-foreground">Simulated Market Price (PostgreSQL)</p>
           <p className="font-medium">{formatInr(marketPriceInr)}</p>

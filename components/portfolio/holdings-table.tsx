@@ -35,16 +35,16 @@ export function HoldingsTable({ holdings }: HoldingsTableProps) {
   }
 
   return (
-    <Table>
+    <Table className="tf-dense-table">
       <TableHeader>
         <TableRow>
-          <TableHead>Symbol</TableHead>
+          <TableHead>Stock</TableHead>
           <TableHead className="hidden md:table-cell">Name</TableHead>
-          <TableHead className="text-right">Quantity</TableHead>
-          <TableHead className="hidden text-right sm:table-cell">Avg. Buy</TableHead>
-          <TableHead className="text-right">Sim. Price</TableHead>
-          <TableHead className="text-right">Sim. Value</TableHead>
-          <TableHead className="text-right">Unrealized P/L</TableHead>
+          <TableHead className="text-right">Qty</TableHead>
+          <TableHead className="hidden text-right sm:table-cell">Avg. Price</TableHead>
+          <TableHead className="text-right">Current</TableHead>
+          <TableHead className="text-right">Mkt Value</TableHead>
+          <TableHead className="text-right">P/L</TableHead>
           <TableHead className="hidden text-right lg:table-cell">P/L %</TableHead>
         </TableRow>
       </TableHeader>

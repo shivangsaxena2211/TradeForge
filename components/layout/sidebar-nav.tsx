@@ -35,13 +35,19 @@ export function SidebarNav({
                 onClick={onNavigate}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all motion-reduce:transition-none",
+                  "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-all motion-reduce:transition-none",
                   isActive
                     ? "definn-nav-active text-primary"
                     : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground",
                 )}
               >
-                <Icon className="size-4 shrink-0" aria-hidden="true" />
+                <Icon
+                  className={cn(
+                    "size-4 shrink-0",
+                    isActive ? "text-primary" : "text-muted-foreground",
+                  )}
+                  aria-hidden="true"
+                />
                 {item.label}
               </Link>
             </li>

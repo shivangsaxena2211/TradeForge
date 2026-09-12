@@ -24,7 +24,7 @@ function isActive(filter: string, activeStatus: string): boolean {
 export function OrdersFilter({ activeStatus }: OrdersFilterProps) {
   return (
     <div
-      className="mb-4 flex flex-wrap gap-2"
+      className="mb-3 flex flex-wrap gap-1.5"
       role="group"
       aria-label="Order status filters"
     >
@@ -38,7 +38,7 @@ export function OrdersFilter({ activeStatus }: OrdersFilterProps) {
             href={href}
             aria-pressed={isActive(filter, activeStatus)}
             className={cn(
-              "rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors",
+              "rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
               isActive(filter, activeStatus)
                 ? "border-primary bg-primary text-primary-foreground"
                 : "bg-background text-muted-foreground hover:bg-muted",

@@ -22,68 +22,57 @@ export function BlockchainActivityCard({
   return (
     <SectionCard
       title="Blockchain Activity"
-      description="DEFINN Local Network — simulated on-chain execution layer."
-      className="definn-card-glow"
+      description="Local simulated execution layer (Chain 31337)."
+      compact
     >
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-3 rounded-lg border border-border/60 bg-muted/20 p-4">
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-medium">Network</p>
-            <StatusBadge status={connected ? "Connected" : "Unavailable"} />
-          </div>
-          <dl className="space-y-2 text-sm">
-            <div className="flex justify-between gap-2">
-              <dt className="text-muted-foreground">Name</dt>
-              <dd className="font-medium">{blockchainConfig.networkName}</dd>
-            </div>
-            <div className="flex justify-between gap-2">
-              <dt className="text-muted-foreground">Chain ID</dt>
-              <dd className="font-mono font-medium">{blockchainConfig.chainId}</dd>
-            </div>
-            {connected && status?.blockNumber !== null ? (
-              <div className="flex items-center justify-between gap-2">
-                <dt className="flex items-center gap-1.5 text-muted-foreground">
-                  <Blocks className="size-3.5" aria-hidden="true" />
-                  Block
-                </dt>
-                <dd className="font-mono font-medium">{status?.blockNumber}</dd>
-              </div>
-            ) : null}
-          </dl>
-        </div>
-
-        <div className="space-y-3 rounded-lg border border-border/60 bg-muted/20 p-4">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-2 rounded-lg border border-border/40 bg-surface-inset px-3 py-2">
           <div className="flex items-center gap-2">
-            <Activity className="size-4 text-primary" aria-hidden="true" />
-            <p className="text-sm font-medium">Recent Activity</p>
+            <Blocks className="size-3.5 text-primary" aria-hidden="true" />
+            <span className="text-xs font-medium">{blockchainConfig.networkName}</span>
           </div>
-          <dl className="space-y-2 text-sm">
-            <div className="flex justify-between gap-2">
-              <dt className="text-muted-foreground">Confirmed trades</dt>
-              <dd className="font-medium">{recentTradeCount}</dd>
-            </div>
-            {recentTxHash ? (
-              <div className="space-y-1">
-                <dt className="flex items-center gap-1.5 text-muted-foreground">
-                  <Link2 className="size-3.5" aria-hidden="true" />
-                  Latest transaction
-                </dt>
-                <dd>
-                  <TxHashCopy txHash={recentTxHash} />
-                </dd>
-              </div>
-            ) : (
-              <p className="text-muted-foreground">No confirmed transactions yet.</p>
-            )}
-          </dl>
+          <StatusBadge status={connected ? "Connected" : "Unavailable"} />
         </div>
-      </div>
 
-      {!connected ? (
-        <p className="mt-4 text-sm text-muted-foreground">
-          Blockchain unavailable. Historical records remain visible; live verification and trading require Anvil.
-        </p>
-      ) : null}
+        <dl className="grid grid-cols-2 gap-2 text-[11px]">
+          <div className="rounded-md bg-surface-inset px-2 py-1.5">
+            <dt className="text-muted-foreground">Chain ID</dt>
+            <dd className="font-mono font-semibold">{blockchainConfig.chainId}</dd>
+          </div>
+          <div className="rounded-md bg-surface-inset px-2 py-1.5">
+            <dt className="text-muted-foreground">Block</dt>
+            <dd className="font-mono font-semibold">
+              {connected && status?.blockNumber !== null ? status?.blockNumber : "—"}
+            </dd>
+          </div>
+          <div className="rounded-md bg-surface-inset px-2 py-1.5">
+            <dt className="flex items-center gap-1 text-muted-foreground">
+              <Activity className="size-3" aria-hidden="true" />
+              Trades
+            </dt>
+            <dd className="font-semibold">{recentTradeCount}</dd>
+          </div>
+          <div className="rounded-md bg-surface-inset px-2 py-1.5">
+            <dt className="flex items-center gap-1 text-muted-foreground">
+              <Link2 className="size-3" aria-hidden="true" />
+              Latest Tx
+            </dt>
+            <dd className="truncate">
+              {recentTxHash ? (
+                <TxHashCopy txHash={recentTxHash} />
+              ) : (
+                <span className="text-muted-foreground">None</span>
+              )}
+            </dd>
+          </div>
+        </dl>
+
+        {!connected ? (
+          <p className="text-[10px] text-muted-foreground">
+            Blockchain unavailable. Start Anvil for live trading and verification.
+          </p>
+        ) : null}
+      </div>
     </SectionCard>
   );
 }

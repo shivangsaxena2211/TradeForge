@@ -22,9 +22,14 @@ import type { OrderDetail, OrderListItem } from "@/lib/trading/types";
 type OrdersTableProps = {
   orders: OrderListItem[];
   showTxHash?: boolean;
+  compact?: boolean;
 };
 
-export function OrdersTable({ orders, showTxHash = true }: OrdersTableProps) {
+export function OrdersTable({
+  orders,
+  showTxHash = true,
+  compact = false,
+}: OrdersTableProps) {
   const [selectedOrder, setSelectedOrder] = useState<OrderDetail | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -66,21 +71,27 @@ export function OrdersTable({ orders, showTxHash = true }: OrdersTableProps) {
 
   return (
     <>
-      <Table>
+      <Table className={compact ? "tf-dense-table" : undefined}>
         <TableHeader>
           <TableRow>
             <TableHead>Stock</TableHead>
             <TableHead>Side</TableHead>
-            <TableHead className="hidden sm:table-cell">Type</TableHead>
-            <TableHead className="text-right">Quantity</TableHead>
+            {!compact ? (
+              <TableHead className="hidden sm:table-cell">Type</TableHead>
+            ) : null}
+            <TableHead className="text-right">Qty</TableHead>
             <TableHead className="hidden text-right md:table-cell">Price</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead className="hidden text-right lg:table-cell">Total</TableHead>
-            <TableHead className="hidden xl:table-cell">Date</TableHead>
-            {showTxHash ? (
+            {!compact ? (
+              <TableHead className="hidden text-right lg:table-cell">Total</TableHead>
+            ) : null}
+            {!compact ? (
+              <TableHead className="hidden xl:table-cell">Date</TableHead>
+            ) : null}
+            {showTxHash && !compact ? (
               <TableHead className="hidden 2xl:table-cell">Tx Hash</TableHead>
             ) : null}
-            <TableHead className="text-right">Details</TableHead>
+            <TableHead className="text-right">{compact ? "" : "Details"}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -94,9 +105,11 @@ export function OrdersTable({ orders, showTxHash = true }: OrdersTableProps) {
                 <TableCell>
                   <StatusBadge status={order.side} />
                 </TableCell>
-                <TableCell className="hidden sm:table-cell">
-                  {order.orderType}
-                </TableCell>
+                {!compact ? (
+                  <TableCell className="hidden sm:table-cell">
+                    {order.orderType}
+                  </TableCell>
+                ) : null}
                 <TableCell className="text-right">{order.quantity}</TableCell>
                 <TableCell className="hidden text-right md:table-cell">
                   {formatInr(displayPrice)}
@@ -104,15 +117,19 @@ export function OrdersTable({ orders, showTxHash = true }: OrdersTableProps) {
                 <TableCell>
                   <StatusBadge status={order.status} />
                 </TableCell>
-                <TableCell className="hidden text-right lg:table-cell">
-                  {order.totalValue !== null
-                    ? formatInr(order.totalValue)
-                    : "—"}
-                </TableCell>
-                <TableCell className="hidden text-muted-foreground xl:table-cell">
-                  {new Date(order.createdAt).toLocaleString()}
-                </TableCell>
-                {showTxHash ? (
+                {!compact ? (
+                  <TableCell className="hidden text-right lg:table-cell">
+                    {order.totalValue !== null
+                      ? formatInr(order.totalValue)
+                      : "—"}
+                  </TableCell>
+                ) : null}
+                {!compact ? (
+                  <TableCell className="hidden text-muted-foreground xl:table-cell">
+                    {new Date(order.createdAt).toLocaleString()}
+                  </TableCell>
+                ) : null}
+                {showTxHash && !compact ? (
                   <TableCell className="hidden 2xl:table-cell">
                     {order.txHash ? (
                       <TxHashCopy txHash={order.txHash} />
@@ -124,11 +141,11 @@ export function OrdersTable({ orders, showTxHash = true }: OrdersTableProps) {
                 <TableCell className="text-right">
                   <Button
                     type="button"
-                    variant="outline"
-                    size="sm"
+                    variant={compact ? "ghost" : "outline"}
+                    size={compact ? "xs" : "sm"}
                     onClick={() => void openOrderDetail(order.id)}
                   >
-                    View
+                    {compact ? "···" : "View"}
                   </Button>
                 </TableCell>
               </TableRow>

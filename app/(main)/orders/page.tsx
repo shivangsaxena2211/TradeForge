@@ -44,11 +44,11 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
     <>
       <PageHeader
         title="Orders"
-        description="View and filter your simulated buy and sell orders from PostgreSQL."
-        badge="Order History"
+        description="View and filter simulated buy and sell orders."
+        badge={`${orders.length} orders`}
       />
 
-      <SectionCard title="Order History">
+      <SectionCard title="Order Management" compact>
         <OrdersFilter activeStatus={status} />
         <OrdersTable orders={orders} />
       </SectionCard>

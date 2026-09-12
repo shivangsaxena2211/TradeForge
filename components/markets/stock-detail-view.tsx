@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { formatChange, formatInr, formatPercent } from "@/lib/format/currency";
 import type { MarketStockDetail, PriceHistoryPoint } from "@/lib/market/types";
 
-import { PriceHistoryChart } from "./price-history-chart";
+import { InteractivePriceChart } from "./interactive-price-chart";
 import { WatchlistButton } from "./watchlist-button";
 
 type StockDetailViewProps = {
@@ -26,12 +26,9 @@ export function StockDetailView({
   history,
   inWatchlist,
 }: StockDetailViewProps) {
-  const hasHistorical = history.some((point) => point.sourceType === "HISTORICAL");
-  const hasSimulated = history.some((point) => point.sourceType === "SIMULATED");
-
   return (
-    <>
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <PageHeader
           title={stock.symbol}
           description={stock.companyName}
@@ -39,121 +36,78 @@ export function StockDetailView({
         />
         <Link href="/markets">
           <Button type="button" variant="outline" size="sm">
-            <ArrowLeft className="size-4" aria-hidden="true" />
+            <ArrowLeft className="size-3.5" aria-hidden="true" />
             Markets
           </Button>
         </Link>
       </div>
 
-      <p className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
-        DEFINN is an academic stock-market simulation. Prices may be based on
-        historical/reference market data, while all future movements and trade
-        execution are simulated. No orders are sent to NSE/BSE.
+      <p className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-[11px] text-muted-foreground">
+        DEFINN is a stock-market simulation. Prices may reference historical
+        data; all future movements and trade execution are simulated. No orders
+        are sent to NSE/BSE.
       </p>
 
-      <div className="definn-card definn-card-glow grid gap-6 p-6 md:grid-cols-2 xl:grid-cols-4">
-        <div className="xl:col-span-2">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Simulated Price
-          </p>
-          <p className="mt-1 text-4xl font-bold tracking-tight">
+      <div className="definn-card grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="sm:col-span-2">
+          <p className="tf-metric-label">Simulated Price</p>
+          <p className="mt-0.5 text-[28px] font-bold leading-none tabular-nums">
             {formatInr(stock.currentPrice)}
           </p>
-          <p className={`mt-2 text-sm font-medium ${changeClass(stock.change)}`}>
+          <p className={`mt-1 text-sm font-medium ${changeClass(stock.change)}`}>
             {formatChange(stock.change)} ({formatPercent(stock.changePercent)})
           </p>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             <StatusBadge
               status={stock.simulationStatus === "LIVE" ? "ACTIVE" : "INACTIVE"}
             />
-            <span className="text-xs text-muted-foreground">
-              Simulation {stock.simulationStatus}
+            <span className="text-[10px] text-muted-foreground">
+              {stock.exchange} · {stock.marketStatus}
             </span>
           </div>
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Exchange
+          <p className="tf-metric-label">Day Range</p>
+          <p className="mt-0.5 text-sm font-semibold tabular-nums">
+            {stock.dayLow != null ? formatInr(stock.dayLow) : "—"} –{" "}
+            {stock.dayHigh != null ? formatInr(stock.dayHigh) : "—"}
           </p>
-          <p className="mt-1 text-2xl font-semibold">{stock.exchange}</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Real listed security — simulated execution only
+          <p className="mt-1 text-[10px] text-muted-foreground">
+            Open {stock.dayOpen != null ? formatInr(stock.dayOpen) : "—"}
           </p>
-          {stock.isin ? (
-            <p className="mt-1 text-xs text-muted-foreground">ISIN: {stock.isin}</p>
-          ) : null}
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Sector
-          </p>
-          <p className="mt-1 text-2xl font-semibold">
-            {stock.sector ?? "—"}
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Market: {stock.marketStatus}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Source: {stock.priceSource}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="definn-card p-4">
-          <p className="text-xs text-muted-foreground">Open</p>
-          <p className="mt-1 text-lg font-semibold">
-            {stock.dayOpen != null ? formatInr(stock.dayOpen) : "—"}
-          </p>
-        </div>
-        <div className="definn-card p-4">
-          <p className="text-xs text-muted-foreground">High</p>
-          <p className="mt-1 text-lg font-semibold">
-            {stock.dayHigh != null ? formatInr(stock.dayHigh) : "—"}
-          </p>
-        </div>
-        <div className="definn-card p-4">
-          <p className="text-xs text-muted-foreground">Low</p>
-          <p className="mt-1 text-lg font-semibold">
-            {stock.dayLow != null ? formatInr(stock.dayLow) : "—"}
-          </p>
-        </div>
-        <div className="definn-card p-4">
-          <p className="text-xs text-muted-foreground">Volume</p>
-          <p className="mt-1 text-lg font-semibold">
+          <p className="tf-metric-label">Volume</p>
+          <p className="mt-0.5 text-sm font-semibold tabular-nums">
             {stock.volume.toLocaleString("en-IN")}
           </p>
+          <p className="mt-1 text-[10px] text-muted-foreground">
+            {stock.sector ?? "—"} · {stock.priceSource}
+          </p>
         </div>
       </div>
 
+      <InteractivePriceChart
+        key={stock.symbol}
+        symbol={stock.symbol}
+        initialHistory={history}
+        compact
+        heightClass="h-56"
+      />
+
       {stock.description ? (
-        <SectionCard title="About">
-          <p className="text-sm leading-relaxed text-muted-foreground">
+        <SectionCard title="About" compact>
+          <p className="text-xs leading-relaxed text-muted-foreground">
             {stock.description}
           </p>
         </SectionCard>
       ) : null}
 
-      <SectionCard
-        title="Price History"
-        description={
-          hasHistorical && hasSimulated
-            ? "Historical/reference data followed by DEFINN-simulated continuation."
-            : hasHistorical
-              ? "Imported historical/reference OHLCV data for academic demonstration."
-              : "DEFINN-generated simulated price path."
-        }
-      >
-        <PriceHistoryChart history={history} />
+      <SectionCard title="Watchlist" compact>
+        <WatchlistButton symbol={stock.symbol} initialInWatchlist={inWatchlist} />
       </SectionCard>
-
-      <SectionCard title="Watchlist">
-        <div className="flex flex-wrap items-center gap-3">
-          <WatchlistButton symbol={stock.symbol} initialInWatchlist={inWatchlist} />
-        </div>
-      </SectionCard>
-    </>
+    </div>
   );
 }

@@ -130,11 +130,11 @@ export function MarketsBrowser({
 
   return (
     <>
-      <p className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-muted-foreground">
+      <p className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-[11px] text-muted-foreground">
         {summary.note}
       </p>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title="Simulation Sentiment"
           value={summary.sentiment ?? "NEUTRAL"}
@@ -189,11 +189,11 @@ export function MarketsBrowser({
         </SectionCard>
       ) : null}
 
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <SearchInput
           label="Search stocks"
           placeholder="Search by symbol or company..."
-          className="max-w-md"
+          className="max-w-sm"
           value={search}
           onChange={setSearch}
           helperText="Simulated market data only — not live NSE/BSE prices."
@@ -201,7 +201,7 @@ export function MarketsBrowser({
 
         <div className="flex flex-wrap gap-2">
           <select
-            className="rounded-lg border bg-background px-3 py-2 text-sm"
+            className="h-8 rounded-lg border border-border/60 bg-card/60 px-2.5 text-xs"
             value={exchange}
             onChange={(event) => setExchange(event.target.value)}
             aria-label="Filter by exchange"
@@ -214,7 +214,7 @@ export function MarketsBrowser({
           </select>
 
           <select
-            className="rounded-lg border bg-background px-3 py-2 text-sm"
+            className="h-8 rounded-lg border border-border/60 bg-card/60 px-2.5 text-xs"
             value={sortKey}
             onChange={(event) => setSortKey(event.target.value as SortKey)}
             aria-label="Sort stocks"
@@ -249,11 +249,12 @@ export function MarketsBrowser({
       ) : null}
 
       <SectionCard
-        title="Indian Equity Universe"
-        description="Real listed security identities with DEFINN-simulated prices. Execution occurs on Stock.sol — not on NSE/BSE."
+        title="Market Overview"
+        description="NSE equities with DEFINN-simulated prices. Execution on Stock.sol — not NSE/BSE."
+        compact
       >
         {isLoading ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">
+          <p className="py-4 text-center text-xs text-muted-foreground">
             Loading simulated market data...
           </p>
         ) : (
@@ -261,6 +262,7 @@ export function MarketsBrowser({
             stocks={sortedStocks}
             showActions
             watchlistSymbols={watchlistSymbols}
+            showExtended
           />
         )}
       </SectionCard>

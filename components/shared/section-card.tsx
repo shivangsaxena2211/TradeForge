@@ -14,6 +14,7 @@ type SectionCardProps = {
   children: React.ReactNode;
   className?: string;
   action?: React.ReactNode;
+  compact?: boolean;
 };
 
 export function SectionCard({
@@ -22,17 +23,33 @@ export function SectionCard({
   children,
   className,
   action,
+  compact = false,
 }: SectionCardProps) {
   return (
-    <Card className={cn("definn-card border-border/80 shadow-none", className)}>
-      <CardHeader className={action ? "grid-cols-[1fr_auto]" : undefined}>
+    <Card
+      className={cn(
+        "definn-card border-border/60 shadow-none",
+        compact && "gap-0 py-0",
+        className,
+      )}
+    >
+      <CardHeader
+        className={cn(
+          action ? "grid-cols-[1fr_auto]" : undefined,
+          compact && "px-3 py-3",
+        )}
+      >
         <div>
-          <CardTitle className="text-base font-semibold">{title}</CardTitle>
-          {description ? <CardDescription>{description}</CardDescription> : null}
+          <CardTitle className="tf-panel-header">{title}</CardTitle>
+          {description ? (
+            <CardDescription className="text-[11px]">{description}</CardDescription>
+          ) : null}
         </div>
         {action}
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      <CardContent className={cn(compact && "px-3 pb-3 pt-0")}>
+        {children}
+      </CardContent>
     </Card>
   );
 }
