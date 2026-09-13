@@ -1,6 +1,6 @@
-# DEFINN Security Guide
+# TradeForge Security Guide
 
-This document describes how DEFINN handles security in its **local academic simulation** context. It is not a production security certification.
+This document describes how TradeForge handles security in its **local academic simulation** context. It is not a production security certification.
 
 ---
 
@@ -22,7 +22,7 @@ This document describes how DEFINN handles security in its **local academic simu
 
 ## 3. Wallet Security
 
-The **DEFINN Wallet** is custom — not MetaMask.
+The **TradeForge Wallet** is custom — not MetaMask.
 
 | Data | Storage |
 | --- | --- |
@@ -111,7 +111,7 @@ Server diagnostics: `logServerError(context, error)` logs `error.name` and `erro
 
 ## 12. Production Considerations
 
-If DEFINN were ever deployed beyond a classroom demo:
+If TradeForge were ever deployed beyond a classroom demo:
 
 | Area | Recommendation |
 | --- | --- |
@@ -124,7 +124,7 @@ If DEFINN were ever deployed beyond a classroom demo:
 | Monitoring | Structured logging without PII/secrets |
 | Dependencies | Regular `npm audit` with controlled upgrades |
 
-**Rate limiting is not implemented** because DEFINN is a local academic simulation and does not expose production internet-facing infrastructure.
+**Rate limiting is not implemented** because TradeForge is a local academic simulation and does not expose production internet-facing infrastructure.
 
 Endpoints that would need rate limiting in production:
 
